@@ -45,7 +45,6 @@ export const applicationTable = pgTable("applications", {
   name: varchar("name", { length: 100 }).notNull(),
   clientId: varchar("client_id", { length: 100 }).unique().notNull(),
   clientSecret: varchar("client_secret", { length: 255 }).notNull(),
-
   redirectURL: text("redirect_urls").array().default([]),
   privacyPolicyURL: text("privacy_policy_url"),
   ownerId: uuid("owner_id")
