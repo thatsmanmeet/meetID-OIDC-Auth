@@ -34,7 +34,7 @@ function createExpressApplication(): Express {
 
   app.use("/api/v1/auth", authRouter);
   app.use("/api/v1/application", applicationRouter);
-  app.use("/api/v1/users", userRouter);
+  app.use("/api/v1/user", userRouter);
 
   // error middlewares
   app.use((err: Error, req: Request, res: Response, next: NextFunction) => {

@@ -11,6 +11,7 @@ import type {
   updateAvatarPayload,
   updateProfilePayload,
 } from "./user.validation.js";
+import bcrypt from "bcryptjs";
 
 const safeUserFields = {
   id: userTable.id,
@@ -38,9 +39,50 @@ class UserService {
     userId: string,
     data: z.infer<typeof updateProfilePayload>,
   ) {
+    const payload: z.infer<typeof updateProfilePayload> = {};
+    // first check if user sent password and confirm password or not
+    if (data.oldPassword || data.password || data.confirmPassword) {
+      if (!data.oldPassword || !data.password || !data.confirmPassword) {
+        throw APIError.BadRequest("All password fields are required");
+      }
+      if (data.password !== data.confirmPassword) {
+        throw APIError.BadRequest("Passwords don't match");
+      }
+
+      // need to validate old password
+      const [existingUser] = await db
+        .select({ password: userTable.password })
+        .from(userTable)
+        .where(eq(userTable.id, userId));
+
+      if (!existingUser) {
+        throw APIError.NotFound("User not found");
+      }
+
+      const isPasswordValid = await bcrypt.compare(
+        data.oldPassword,
+        existingUser.password,
+      );
+
+      if (!isPasswordValid) {
+        throw APIError.UnAuthorized("Invalid Old Password");
+      }
+
+      const hashedPassword = await bcrypt.hash(data.password, 12);
+
+      payload.password = hashedPassword;
+    }
+
+    if (data.firstName) payload.firstName = data.firstName;
+    if (data.lastName) payload.lastName = data.lastName;
+
+    if (Object.keys(payload).length === 0) {
+      throw APIError.BadRequest("Nothing to update");
+    }
+
     const [user] = await db
       .update(userTable)
-      .set(data)
+      .set(payload)
       .where(eq(userTable.id, userId))
       .returning(safeUserFields);
 
