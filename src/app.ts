@@ -5,6 +5,8 @@ import cors from "cors";
 import helmet from "helmet";
 import { AuthMiddleware } from "./middlewares/auth.middleware.js";
 import authRouter from "./modules/Auth/auth.routes.js";
+import applicationRouter from "./modules/Application/application.routes.js";
+import userRouter from "./modules/User/user.routes.js";
 import APIError from "./utils/APIError.js";
 import { env } from "./env.js";
 
@@ -31,6 +33,8 @@ function createExpressApplication(): Express {
   });
 
   app.use("/api/v1/auth", authRouter);
+  app.use("/api/v1/application", applicationRouter);
+  app.use("/api/v1/users", userRouter);
 
   // error middlewares
   app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
@@ -43,6 +47,12 @@ function createExpressApplication(): Express {
         other: err.cause,
       });
     }
+    return res.status(500).json({
+      success: false,
+      statusCode: 500,
+      message: "Internal Server Error",
+      stack: env.NODE_ENV === "development" ? err.stack : null,
+    });
   });
 
   return app;

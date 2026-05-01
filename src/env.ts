@@ -32,7 +32,7 @@ if (!result.success) {
     const path = issue.path.join(".");
     console.log(`${path}: ${issue.message}`.yellow);
   });
-  console.log("/n");
+  console.log("\n");
   process.exit(1);
 }
 

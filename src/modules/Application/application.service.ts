@@ -90,7 +90,7 @@ class ApplicationService {
       .where(
         and(eq(applicationTable.id, id), eq(applicationTable.ownerId, ownerId)),
       )
-      .returning();
+      .returning({ id: applicationTable.id });
 
     if (!app) throw APIError.NotFound("Application not found");
   }
