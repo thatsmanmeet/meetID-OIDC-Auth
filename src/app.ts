@@ -7,8 +7,11 @@ import { AuthMiddleware } from "./middlewares/auth.middleware.js";
 import authRouter from "./modules/Auth/auth.routes.js";
 import applicationRouter from "./modules/Application/application.routes.js";
 import userRouter from "./modules/User/user.routes.js";
+import oidcRouter from "./modules/OIDC/oidc.routes.js";
 import APIError from "./utils/APIError.js";
 import { env } from "./env.js";
+import jose from "node-jose";
+import { PUBLIC_KEY } from "./utils/cert.js";
 
 function createExpressApplication(): Express {
   const app = express();
@@ -35,6 +38,29 @@ function createExpressApplication(): Express {
   app.use("/api/v1/auth", authRouter);
   app.use("/api/v1/application", applicationRouter);
   app.use("/api/v1/user", userRouter);
+  app.use("/api/v1/oidc", oidcRouter);
+
+  // OIDC Discovery Endpoints
+
+  app.get(
+    "/.well-known/openid-configuration",
+    (req: Request, res: Response) => {
+      const ISSUER = `http://localhost:${env.PORT}`;
+      return res.status(200).json({
+        issuer: ISSUER,
+        authorization_endpoint: `${ISSUER}/api/v1/oidc/authenticate`,
+        token_endpoint: `${ISSUER}/api/v1/oidc/token`,
+        userinfo_endpoint: `${ISSUER}/api/v1/oidc/userinfo`,
+        jwks_uri: `${ISSUER}/.well-known/jwks.json`,
+      });
+    },
+  );
+
+  app.get("/.well-known/jwks.json", async (_, res: Response) => {
+    // public key from utils/cert
+    const key = await jose.JWK.asKey(PUBLIC_KEY, "pem");
+    return res.status(200).json({ keys: [key.toJSON()] });
+  });
 
   // error middlewares
   app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
