@@ -12,13 +12,11 @@ export const UserFromParamsPayload = z.object({
 
 export const AuthenticateQueryPayload = z.object({
   clientId: z.string().min(1).trim(),
-  redirectUri: z.url().trim(),
-  state: z.string().min(1).trim().optional(),
 });
 
 export const ConsentQueryPayload = z.object({
   clientId: z.string().min(1).trim(),
-  redirectUri: z.url().trim(),
+  redirectUri: z.string().min(1).trim(),
   state: z.string().min(1).trim().optional(),
 });
 
@@ -26,5 +24,5 @@ export const TokenExchangePayload = z.object({
   clientId: z.string().min(1).trim(),
   clientSecret: z.string().min(1).trim(),
   code: z.string().min(1).trim(),
-  redirectUri: z.url().trim(),
+  redirectUri: z.string().min(1).trim(),
 });

@@ -35,7 +35,7 @@ class OIDCController {
     );
 
     if (!validatedQuery.success) {
-      throw APIError.BadRequest("Invalid query parameters");
+      throw APIError.BadRequest("ClientId not present");
     }
 
     const validatedUser = await UserFromParamsPayload.safeParseAsync(req.user);
@@ -44,33 +44,18 @@ class OIDCController {
       throw APIError.UnAuthorized("You are not logged in");
     }
 
-    const { clientId, redirectUri, state } = validatedQuery.data;
+    const { clientId } = validatedQuery.data;
+
+    const application =
+      await this.oidcService.getApplicationInformationService(clientId);
 
     const consentInfo = await this.oidcService.getConsentInfoService(
       clientId,
       validatedUser.data.id,
     );
 
-    if (consentInfo.status === "consent_accepted") {
-      const { authCode } = await this.oidcService.acceptConsentService(
-        clientId,
-        validatedUser.data.id,
-      );
-
-      const redirectUrl = new URL(redirectUri);
-      redirectUrl.searchParams.set("code", authCode);
-      if (state) redirectUrl.searchParams.set("state", state);
-
-      return res.redirect(redirectUrl.toString());
-    }
-
-    // Consent not yet given — return app info so frontend can show the consent screen
-    const application = await this.oidcService.getApplicationInformationService(
-      clientId,
-    );
-
-    return APIResponse.Ok(res, "Consent Required", {
-      consentRequired: true,
+    return APIResponse.Ok(res, "Authenticate Info Fetched", {
+      consentRequired: consentInfo.status === "consent_required",
       application,
     });
   }
@@ -95,11 +80,7 @@ class OIDCController {
       validatedUser.data.id,
     );
 
-    const redirectUrl = new URL(redirectUri);
-    redirectUrl.searchParams.set("code", authCode);
-    if (state) redirectUrl.searchParams.set("state", state);
-
-    return res.redirect(redirectUrl.toString());
+    return APIResponse.Ok(res, "Code Generated", authCode);
   }
 
   public async handleVerifyAuthCode(req: Request, res: Response) {
