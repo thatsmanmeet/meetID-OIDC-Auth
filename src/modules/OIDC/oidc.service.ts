@@ -172,7 +172,15 @@ class OIDCService {
 
     const ISSUER = `http://localhost:${env.PORT}`;
     const idToken = jwt.sign(
-      { sub: user.id, email: user.email, firstName: user.firstName },
+      {
+        sub: user.id,
+        email: user.email,
+        email_verified: user.emailVerified,
+        name: [user.firstName, user.lastName].filter(Boolean).join(" "),
+        given_name: user.firstName,
+        family_name: user.lastName ?? undefined,
+        picture: user.avatar ?? undefined,
+      },
       PRIVATE_KEY,
       { algorithm: "RS256", expiresIn: "1h", issuer: ISSUER, audience: existingApplication.clientId },
     );
@@ -225,7 +233,15 @@ class OIDCService {
       throw APIError.NotFound("User not found");
     }
 
-    return sanitizeUser(user);
+    return {
+      sub: user.id,
+      email: user.email,
+      email_verified: user.emailVerified,
+      name: [user.firstName, user.lastName].filter(Boolean).join(" "),
+      given_name: user.firstName,
+      family_name: user.lastName ?? undefined,
+      picture: user.avatar ?? undefined,
+    };
   }
 }
 

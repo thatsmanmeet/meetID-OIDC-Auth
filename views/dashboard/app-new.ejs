@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: title }) %>
+<body>
+<div class="app-layout">
+  <%- include('../partials/sidebar') %>
+  <main class="main-content">
+    <%- include('../partials/flash') %>
+    <a href="/dashboard" class="back-link">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to Applications
+    </a>
+    <div class="page-header">
+      <div class="page-header-text">
+        <h1>New Application</h1>
+        <p>Register an OAuth 2.0 / OIDC application</p>
+      </div>
+    </div>
+
+    <div class="card" style="max-width:640px">
+      <div class="card-header">
+        <div>
+          <h2>Application Details</h2>
+          <p>This information is shown to users on the consent screen.</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <form action="/dashboard/apps" method="POST">
+          <div class="form-group">
+            <label class="form-label" for="name">Application Name</label>
+            <input type="text" id="name" name="name" class="form-input" placeholder="My Awesome App" required maxlength="100" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="redirectURL">
+              Redirect URLs <span>(one per line)</span>
+            </label>
+            <textarea id="redirectURL" name="redirectURL" class="form-input" placeholder="https://myapp.example.com/callback&#10;http://localhost:3000/callback" rows="3"></textarea>
+            <p class="form-hint">Must be valid URLs. Users will be redirected here after authorization.</p>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="privacyPolicyURL">
+              Privacy Policy URL <span>(optional)</span>
+            </label>
+            <input type="url" id="privacyPolicyURL" name="privacyPolicyURL" class="form-input" placeholder="https://myapp.example.com/privacy" />
+          </div>
+          <div class="actions-row" style="margin-top:8px">
+            <button type="submit" class="btn btn-primary">Create Application</button>
+            <a href="/dashboard" class="btn btn-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="/js/main.js"></script>
+</body>
+</html>

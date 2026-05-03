@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: title }) %>
+<body>
+<div class="app-layout">
+  <%- include('../partials/sidebar') %>
+  <main class="main-content">
+    <%- include('../partials/flash') %>
+    <div class="page-header">
+      <div class="page-header-text">
+        <h1>Connected Apps</h1>
+        <p>Applications you've authorized to access your MeetID account</p>
+      </div>
+    </div>
+
+    <% if (!grantedApps || grantedApps.length === 0) { %>
+    <div class="card">
+      <div class="empty-state">
+        <div class="empty-state-icon">🔗</div>
+        <h3>No connected apps</h3>
+        <p>You haven't authorized any third-party applications yet.</p>
+      </div>
+    </div>
+    <% } else { %>
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Application</th>
+              <th>Client ID</th>
+              <th>Granted</th>
+              <th>Expires</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% grantedApps.forEach(function(item) { %>
+            <tr>
+              <td>
+                <div style="font-weight:600;color:#0f172a"><%= item.appName %></div>
+                <% if (item.privacyPolicyURL) { %>
+                  <a href="<%= item.privacyPolicyURL %>" target="_blank" rel="noopener" class="text-xs text-muted">Privacy Policy</a>
+                <% } %>
+              </td>
+              <td><span class="font-mono text-xs text-muted"><%= item.clientId %></span></td>
+              <td class="text-sm"><%= new Date(item.grantedAt).toLocaleDateString() %></td>
+              <td class="text-sm"><%= new Date(item.expiresAt).toLocaleDateString() %></td>
+              <td>
+                <% if (item.revokedAt) { %>
+                  <span class="badge badge-danger">Revoked</span>
+                <% } else if (new Date(item.expiresAt) < new Date()) { %>
+                  <span class="badge badge-warning">Expired</span>
+                <% } else { %>
+                  <span class="badge badge-success">Active</span>
+                <% } %>
+              </td>
+              <td>
+                <% if (!item.revokedAt) { %>
+                <form action="/profile/consented-apps/<%= item.accessId %>/revoke" method="POST" style="margin:0">
+                  <button type="submit" class="btn btn-danger btn-sm">Revoke</button>
+                </form>
+                <% } %>
+              </td>
+            </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <% } %>
+  </main>
+</div>
+<script src="/js/main.js"></script>
+</body>
+</html>

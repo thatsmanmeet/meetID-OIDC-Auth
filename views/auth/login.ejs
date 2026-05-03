@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: title }) %>
+<body class="auth-page">
+  <div class="auth-card">
+    <%- include('../partials/flash') %>
+    <div class="auth-logo">
+      <h1>MeetID</h1>
+      <p>Sign in to your account</p>
+    </div>
+    <form action="/login<%= next ? '?next=' + encodeURIComponent(next) : '' %>" method="POST">
+      <div class="form-group">
+        <label class="form-label" for="email">Email</label>
+        <input type="email" id="email" name="email" class="form-input" placeholder="you@example.com" required autofocus autocomplete="email" />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="password">
+          Password
+          <span style="float:right;font-size:12px;margin-top:1px"><a href="#">Forgot?</a></span>
+        </label>
+        <input type="password" id="password" name="password" class="form-input" placeholder="••••••••" required autocomplete="current-password" />
+      </div>
+      <button type="submit" class="btn btn-primary btn-full">Sign In</button>
+    </form>
+    <p class="auth-footer">
+      Don't have an account? <a href="/signup">Create one</a>
+    </p>
+  </div>
+  <script src="/js/main.js"></script>
+</body>
+</html>

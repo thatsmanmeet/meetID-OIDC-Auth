@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: title }) %>
+<body>
+<div class="app-layout">
+  <%- include('../partials/sidebar') %>
+  <main class="main-content">
+    <%- include('../partials/flash') %>
+    <a href="/dashboard" class="back-link">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to Applications
+    </a>
+    <div class="page-header">
+      <div class="page-header-text">
+        <h1><%= app.name %></h1>
+        <p>Manage your application's credentials and settings</p>
+      </div>
+    </div>
+
+    <!-- Credentials Card -->
+    <div class="card" style="max-width:720px">
+      <div class="card-header">
+        <h2>Credentials</h2>
+      </div>
+      <div class="card-body">
+        <div class="info-row">
+          <span class="info-label">App ID</span>
+          <span class="info-value mono"><%= app.id %></span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Client ID</span>
+          <div class="info-value">
+            <div class="code-row" style="display:inline-flex;max-width:100%">
+              <span class="font-mono" style="font-size:12.5px"><%= app.clientId %></span>
+              <button class="copy-btn" onclick="copyToClipboard('<%= app.clientId %>', this)">Copy</button>
+            </div>
+          </div>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Client Secret</span>
+          <span class="info-value text-muted text-sm">Hidden — use the button below to reset and reveal a new secret.</span>
+        </div>
+        <% if (app.redirectURL && app.redirectURL.length > 0) { %>
+        <div class="info-row">
+          <span class="info-label">Redirect URLs</span>
+          <div class="info-value">
+            <% app.redirectURL.forEach(function(url) { %>
+              <span class="url-tag"><%= url %></span>
+            <% }); %>
+          </div>
+        </div>
+        <% } %>
+        <% if (app.privacyPolicyURL) { %>
+        <div class="info-row">
+          <span class="info-label">Privacy Policy</span>
+          <span class="info-value"><a href="<%= app.privacyPolicyURL %>" target="_blank" rel="noopener"><%= app.privacyPolicyURL %></a></span>
+        </div>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Edit Card -->
+    <div class="card" style="max-width:720px;margin-top:20px">
+      <div class="card-header">
+        <div>
+          <h2>Edit Application</h2>
+          <p>Update name, redirect URLs, or privacy policy link.</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <form action="/dashboard/apps/<%= app.id %>/update" method="POST">
+          <div class="form-group">
+            <label class="form-label" for="name">Application Name</label>
+            <input type="text" id="name" name="name" class="form-input" value="<%= app.name %>" required maxlength="100" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="redirectURL">
+              Redirect URLs <span>(one per line)</span>
+            </label>
+            <textarea id="redirectURL" name="redirectURL" class="form-input" rows="3"><%= app.redirectURL ? app.redirectURL.join('\n') : '' %></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="privacyPolicyURL">
+              Privacy Policy URL <span>(optional)</span>
+            </label>
+            <input type="url" id="privacyPolicyURL" name="privacyPolicyURL" class="form-input" value="<%= app.privacyPolicyURL || '' %>" />
+          </div>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Danger Zone -->
+    <div class="danger-zone" style="max-width:720px">
+      <div class="danger-zone-head">
+        <h3>Danger Zone</h3>
+      </div>
+      <div class="danger-zone-body">
+        <div class="danger-item">
+          <div class="danger-item-info">
+            <h4>Reset Client Secret</h4>
+            <p>Invalidates the current secret. Any integrations using it will stop working immediately.</p>
+          </div>
+          <form action="/dashboard/apps/<%= app.id %>/reset-secret" method="POST">
+            <button type="submit" class="btn btn-outline-danger btn-sm"
+              onclick="return confirmAction('Reset client secret? All existing integrations will break.')">
+              Reset Secret
+            </button>
+          </form>
+        </div>
+        <div class="danger-item">
+          <div class="danger-item-info">
+            <h4>Delete Application</h4>
+            <p>Permanently removes this application and revokes all active tokens.</p>
+          </div>
+          <form action="/dashboard/apps/<%= app.id %>/delete" method="POST">
+            <button type="submit" class="btn btn-danger btn-sm"
+              onclick="return confirmAction('Delete this application? This cannot be undone.')">
+              Delete App
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+<script src="/js/main.js"></script>
+</body>
+</html>

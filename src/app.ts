@@ -3,11 +3,13 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import helmet from "helmet";
+import path from "node:path";
 import { AuthMiddleware } from "./middlewares/auth.middleware.js";
 import authRouter from "./modules/Auth/auth.routes.js";
 import applicationRouter from "./modules/Application/application.routes.js";
 import userRouter from "./modules/User/user.routes.js";
 import oidcRouter from "./modules/OIDC/oidc.routes.js";
+import viewRouter from "./modules/Views/views.routes.js";
 import APIError from "./utils/APIError.js";
 import { env } from "./env.js";
 import jose from "node-jose";
@@ -15,6 +17,11 @@ import { PUBLIC_KEY } from "./utils/cert.js";
 
 function createExpressApplication(): Express {
   const app = express();
+
+  // view engine
+  app.set("view engine", "ejs");
+  app.set("views", path.resolve(process.cwd(), "views"));
+  app.use(express.static(path.resolve(process.cwd(), "public")));
 
   // express middlewares + other important middlewares
   app.use(express.json({ limit: "50kb" }));
@@ -26,7 +33,19 @@ function createExpressApplication(): Express {
       methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTION"],
     }),
   );
-  app.use(helmet());
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          styleSrc: ["'self'", "'unsafe-inline'"],
+          scriptSrc: ["'self'"],
+          imgSrc: ["'self'", "data:", "https:"],
+          formAction: ["'self'", "http:", "https:"],
+        },
+      },
+    }),
+  );
   app.use(cookieParser());
   app.use(AuthMiddleware());
 
@@ -39,6 +58,7 @@ function createExpressApplication(): Express {
   app.use("/api/v1/application", applicationRouter);
   app.use("/api/v1/user", userRouter);
   app.use("/api/v1/oidc", oidcRouter);
+  app.use("/", viewRouter);
 
   // OIDC Discovery Endpoints
 
@@ -48,7 +68,7 @@ function createExpressApplication(): Express {
       const ISSUER = `http://localhost:${env.PORT}`;
       return res.status(200).json({
         issuer: ISSUER,
-        authorization_endpoint: `${ISSUER}/api/v1/oidc/authenticate`,
+        authorization_endpoint: `${ISSUER}/oidc/authorize`,
         token_endpoint: `${ISSUER}/api/v1/oidc/token`,
         userinfo_endpoint: `${ISSUER}/api/v1/oidc/userinfo`,
         jwks_uri: `${ISSUER}/.well-known/jwks.json`,

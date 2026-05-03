@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: title }) %>
+<body class="auth-page">
+  <div class="auth-card">
+    <%- include('../partials/flash') %>
+    <div class="auth-logo">
+      <h1>MeetID</h1>
+      <p>Create your account</p>
+    </div>
+    <form action="/signup" method="POST">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="firstName">First Name</label>
+          <input type="text" id="firstName" name="firstName" class="form-input" placeholder="Jane" required autocomplete="given-name" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="lastName">Last Name <span>(optional)</span></label>
+          <input type="text" id="lastName" name="lastName" class="form-input" placeholder="Doe" autocomplete="family-name" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="email">Email</label>
+        <input type="email" id="email" name="email" class="form-input" placeholder="you@example.com" required autocomplete="email" />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="password">Password</label>
+        <input type="password" id="password" name="password" class="form-input" placeholder="Min. 8 characters" required autocomplete="new-password" />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="confirmPassword">Confirm Password</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" class="form-input" placeholder="Repeat password" required autocomplete="new-password" />
+      </div>
+      <button type="submit" class="btn btn-primary btn-full">Create Account</button>
+    </form>
+    <p class="auth-footer">
+      Already have an account? <a href="/login">Sign in</a>
+    </p>
+  </div>
+  <script src="/js/main.js"></script>
+</body>
+</html>

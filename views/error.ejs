@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('partials/head', { title: 'Error ' + statusCode }) %>
+<body class="error-page">
+  <div>
+    <div class="error-code"><%= statusCode %></div>
+    <div class="error-msg">
+      <% if (statusCode === 404) { %>Page not found
+      <% } else if (statusCode === 401) { %>Unauthorized
+      <% } else if (statusCode === 403) { %>Forbidden
+      <% } else { %>Something went wrong<% } %>
+    </div>
+    <p class="error-detail"><%= message %></p>
+    <div class="flex items-center gap-3" style="justify-content:center">
+      <a href="javascript:history.back()" class="btn btn-secondary">Go Back</a>
+      <a href="/dashboard" class="btn btn-primary">Dashboard</a>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<% if (typeof flash !== 'undefined' && flash) { %>
+  <% if (flash.secret) { %>
+  <div class="secret-box">
+    <div class="secret-box-title">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Client Secret — Save this now
+    </div>
+    <p class="secret-box-msg"><%= flash.message %></p>
+    <div class="code-row">
+      <span id="secret-value"><%= flash.secret %></span>
+      <button class="copy-btn" onclick="copyToClipboard('<%= flash.secret %>', this)">Copy</button>
+    </div>
+  </div>
+  <% } else { %>
+  <div class="flash flash-<%= flash.type %>">
+    <% if (flash.type === 'success') { %>
+      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+    <% } else { %>
+      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <% } %>
+    <%= flash.message %>
+  </div>
+  <% } %>
+<% } %>

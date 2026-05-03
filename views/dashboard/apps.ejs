@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: title }) %>
+<body>
+<div class="app-layout">
+  <%- include('../partials/sidebar') %>
+  <main class="main-content">
+    <%- include('../partials/flash') %>
+    <div class="page-header">
+      <div class="page-header-text">
+        <h1>Applications</h1>
+        <p>OAuth 2.0 apps you've registered with MeetID</p>
+      </div>
+      <a href="/dashboard/apps/new" class="btn btn-primary">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New Application
+      </a>
+    </div>
+
+    <% if (!apps || apps.length === 0) { %>
+    <div class="card">
+      <div class="empty-state">
+        <div class="empty-state-icon">🔧</div>
+        <h3>No applications yet</h3>
+        <p>Register your first OAuth 2.0 application to get a client ID and secret.</p>
+        <a href="/dashboard/apps/new" class="btn btn-primary">Create Application</a>
+      </div>
+    </div>
+    <% } else { %>
+    <div class="apps-grid">
+      <% apps.forEach(function(app) { %>
+      <a href="/dashboard/apps/<%= app.id %>" class="app-card">
+        <div class="app-card-icon">⚙️</div>
+        <h3><%= app.name %></h3>
+        <div class="app-card-id"><%= app.clientId %></div>
+        <div class="app-card-meta">
+          <span class="badge badge-neutral">
+            <%= app.redirectURL && app.redirectURL.length > 0 ? app.redirectURL.length + ' redirect URL' + (app.redirectURL.length > 1 ? 's' : '') : 'No redirect URLs' %>
+          </span>
+        </div>
+      </a>
+      <% }); %>
+    </div>
+    <% } %>
+  </main>
+</div>
+<script src="/js/main.js"></script>
+</body>
+</html>

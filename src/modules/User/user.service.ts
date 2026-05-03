@@ -107,6 +107,23 @@ class UserService {
     return user;
   }
 
+  async revokeAppAccessService(accessId: string, userId: string) {
+    const [record] = await db
+      .select()
+      .from(appAccessTable)
+      .where(eq(appAccessTable.id, accessId))
+      .limit(1);
+
+    if (!record || record.userId !== userId) {
+      throw APIError.NotFound("Access record not found");
+    }
+
+    await db
+      .update(appAccessTable)
+      .set({ revokedAt: new Date() })
+      .where(eq(appAccessTable.id, accessId));
+  }
+
   async getGrantedAppAccessService(userId: string) {
     return db
       .select({

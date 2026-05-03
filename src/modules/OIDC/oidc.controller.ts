@@ -23,7 +23,7 @@ class OIDCController {
     }
 
     const application = await this.oidcService.getApplicationInformationService(
-      validatedPayload.data.clientId,
+      validatedPayload.data.client_id,
     );
 
     return APIResponse.Ok(res, "Application Details Fetched", application);
@@ -44,13 +44,13 @@ class OIDCController {
       throw APIError.UnAuthorized("You are not logged in");
     }
 
-    const { clientId } = validatedQuery.data;
+    const { client_id } = validatedQuery.data;
 
     const application =
-      await this.oidcService.getApplicationInformationService(clientId);
+      await this.oidcService.getApplicationInformationService(client_id);
 
     const consentInfo = await this.oidcService.getConsentInfoService(
-      clientId,
+      client_id,
       validatedUser.data.id,
     );
 
@@ -73,10 +73,10 @@ class OIDCController {
       throw APIError.BadRequest("Invalid query parameters");
     }
 
-    const { clientId, redirectUri, state } = validatedQuery.data;
+    const { client_id } = validatedQuery.data;
 
     const { authCode } = await this.oidcService.acceptConsentService(
-      clientId,
+      client_id,
       validatedUser.data.id,
     );
 
@@ -92,16 +92,21 @@ class OIDCController {
       throw APIError.BadRequest("Invalid token exchange payload");
     }
 
-    const { clientId, clientSecret, code, redirectUri } = validatedPayload.data;
+    const { client_id, client_secret, code, redirect_uri } = validatedPayload.data;
 
     const tokens = await this.oidcService.verifyAuthTokenService(
-      clientId,
-      clientSecret,
+      client_id,
+      client_secret,
       code,
-      redirectUri,
+      redirect_uri,
     );
 
-    return APIResponse.Ok(res, "Token Exchange Successful", tokens);
+    return res.status(200).json({
+      access_token: tokens.accessToken,
+      token_type: "Bearer",
+      id_token: tokens.idToken,
+      refresh_token: tokens.refreshToken,
+    });
   }
 
   public async handleGetUserInfo(req: Request, res: Response) {
@@ -115,7 +120,7 @@ class OIDCController {
       validatedUser.data.id,
     );
 
-    return APIResponse.Ok(res, "User Info Fetched", user);
+    return res.status(200).json(user);
   }
 }
 

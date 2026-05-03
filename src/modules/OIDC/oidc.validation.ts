@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const ApplicationInfoPayload = z.object({
-  clientId: z.string().min(1).trim().describe("client id to be validated"),
+  client_id: z.string().min(1).trim().describe("client id to be validated"),
 });
 
 export const UserFromParamsPayload = z.object({
@@ -11,18 +11,18 @@ export const UserFromParamsPayload = z.object({
 });
 
 export const AuthenticateQueryPayload = z.object({
-  clientId: z.string().min(1).trim(),
+  client_id: z.string().min(1).trim(),
 });
 
 export const ConsentQueryPayload = z.object({
-  clientId: z.string().min(1).trim(),
-  redirectUri: z.string().min(1).trim(),
+  client_id: z.string().min(1).trim(),
+  redirect_uri: z.string().min(1).trim(),
   state: z.string().min(1).trim().optional(),
 });
 
 export const TokenExchangePayload = z.object({
-  clientId: z.string().min(1).trim(),
-  clientSecret: z.string().min(1).trim(),
+  client_id: z.string().min(1).trim(),
+  client_secret: z.string().min(1).trim(),
   code: z.string().min(1).trim(),
-  redirectUri: z.string().min(1).trim(),
+  redirect_uri: z.string().min(1).trim(),
 });
