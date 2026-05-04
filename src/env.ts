@@ -20,6 +20,7 @@ const envSchema = z.object({
   NODE_ENV: z
     .enum(["production", "development", "staging"])
     .default("development"),
+  SERVER_URL: z.url().default("http://localhost:8055"),
 });
 
 export type Env = z.infer<typeof envSchema>;

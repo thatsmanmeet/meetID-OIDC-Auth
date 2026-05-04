@@ -65,7 +65,7 @@ function createExpressApplication(): Express {
   app.get(
     "/.well-known/openid-configuration",
     (req: Request, res: Response) => {
-      const ISSUER = `http://localhost:${env.PORT}`;
+      const ISSUER = env.SERVER_URL ?? `http://localhost:${env.PORT}`;
       return res.status(200).json({
         issuer: ISSUER,
         authorization_endpoint: `${ISSUER}/oidc/authorize`,
